@@ -1,0 +1,20 @@
+FROM python:3.9.17-slim-bullseye
+
+# 避免使用非 root 帳戶
+RUN pip install flask && \
+    groupadd -r flask && useradd -r -g flask flask && \
+    mkdir /src && \
+    chown -R flask:flask /src
+
+USER flask
+
+# 修改當前目錄
+WORKDIR /src
+ENV FLASK_APP=app.py
+
+# app.py 時常會更改，故往下移
+COPY app.py /src/app.py
+
+EXPOSE 5000
+
+CMD [ "flask", "run", "-h", "0.0.0.0" ]
